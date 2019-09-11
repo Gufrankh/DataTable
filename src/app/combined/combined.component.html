@@ -1,0 +1,271 @@
+<div *ngIf="isLoaded">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <!-- <mat-progress-bar mode="buffer"></mat-progress-bar> -->
+</div>
+<button mat-raised-button (click)="show()">
+    <mat-icon>add</mat-icon> Add Region
+</button>
+<br>
+
+<div *ngIf="showTable">
+    <!-- ----------------------------Add user table----------------------------------->
+    <mat-table [dataSource]="dataSourceAddRegion">
+        <!-- Name Column -->
+        <ng-container matColumnDef="region_Name">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-form-field floatLabel="never">
+                    <input [value]="element.region_Name" [(ngModel)]="element.region_Name" matInput
+                        placeholder="Enter your name" [formControl]="region_Name" required>
+                    <mat-error *ngIf="region_Name.invalid">{{getErrorMessage()}}</mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Surname Column -->
+        <ng-container matColumnDef="region_ISO_Code" fxFlex="40px">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-form-field floatLabel="never">
+                    <input matInput placeholder="region_ISO_Code" [value]="element.region_ISO_Code"
+                        [(ngModel)]="element.region_ISO_Code" required [formControl]="region_ISO_Code">
+                    <mat-error *ngIf="region_ISO_Code.invalid">{{isoGetErrorMessage()}}</mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Age Column -->
+        <ng-container matColumnDef="region_Description" fxFlex="40px">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-form-field floatLabel="never">
+                    <input matInput placeholder="region_Description" [value]="element.region_Description"
+                        [(ngModel)]="element.region_Description" required [formControl]="region_Description">
+                    <mat-error *ngIf="region_Description.invalid">{{desGetErrorMessage()}}</mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="region_Level" fxFlex="40px">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-form-field floatLabel="never">
+                    <input type="number" matInput placeholder="region level" [value]="element.region_Level"
+                        [(ngModel)]="element.region_Level" required [formControl]="region_Level">
+                    <mat-error *ngIf="region_Level.invalid">{{regionLevelGetErrorMessage()}}</mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="parent_Level" fxFlex="40px">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-form-field floatLabel="never">
+                    <input type="number" matInput placeholder="parent_Level" [value]="element.parent_Level"
+                        [(ngModel)]="element.parent_Level" required [formControl]="parent_Level">
+                    <mat-error *ngIf="parent_Level.invalid">{{parentLevelGetErrorMessage()}}</mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <!-- Save Column -->
+        <ng-container matColumnDef="Save">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-raised-button (click)="saveRegion(element)"
+                    [disabled]="region_Name.invalid || region_ISO_Code.invalid || region_Description.invalid">
+                    <mat-icon>save</mat-icon>
+                    Save
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Cancel Column -->
+        <ng-container matColumnDef="Cancel">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-raised-button (click)="cancel()">
+                    <mat-icon>cancel</mat-icon> Cancel
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumnsAddRegion"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumnsAddRegion;"></mat-row>
+    </mat-table>
+</div>
+<br>
+<mat-card>
+    <div class="alert alert-info">
+        <strong>Region Module With All Functionality</strong>
+    </div>
+    <div class="">
+        <mat-form-field class="search-form-field" floatLabel="never">
+            <input matInput [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter()">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear" *ngIf="searchKey" (click)="onSearchClear()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <ng-container action-bar-items>
+            <button va-mat-table-column-sorter [(columns)]="displayedColumns" [columnNames]="displayedColumnsNames"
+                [saveName]="'Table'">
+                <mat-icon>view_column</mat-icon>
+                Filter Columns
+            </button>
+        </ng-container>
+        <div class="example-container mat-elevation-z8" #content>
+
+            <mat-table #Table [dataSource]="MyDataSource" matSort>
+                <!-- For ID -->
+                <ng-container matColumnDef="region_ID">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Region ID
+                         <!-- <mat-form-field class="filter" floatLabel="never">
+                                <mat-label>Search</mat-label>
+                                <input matInput [formControl]="idFilter">
+                            </mat-form-field> -->
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.region_ID}} </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> Total </mat-footer-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="region_Name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Region Name</mat-header-cell>
+                    <mat-cell *matCellDef="let post">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="Name" (change)="editUser(post)"  [value]="post.region_Name"
+                                [(ngModel)]="post.region_Name" required>
+                            <mat-error *ngIf="region_Name.invalid">{{getErrorMessage()}}</mat-error>
+                        </mat-form-field>
+
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+                <!-- Surname Column -->
+                <ng-container matColumnDef="region_ISO_Code" fxFlex="40px">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Region ISO Code</mat-header-cell>
+                    <mat-cell *matCellDef="let post">
+                        <mat-form-field floatLabel="never" >
+                            <input matInput placeholder="Iso" (change)="editUser(post)" [value]="post.region_ISO_Code"
+                                [(ngModel)]="post.region_ISO_Code" required>
+                        </mat-form-field>
+
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+                <!-- Age Column -->
+                <ng-container matColumnDef="region_Description" fxFlex="40px">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Region Description</mat-header-cell>
+                    <mat-cell *matCellDef="let post">
+                        <mat-form-field floatLabel="never">
+                            <input style=" outline: none;" (change)="editUser(post)" matInput placeholder="Description"
+                                [value]="post.region_Description" [(ngModel)]="post.region_Description" required>
+                        </mat-form-field>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="region_Level" fxFlex="40px">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Region Level</mat-header-cell>
+                    <mat-cell *matCellDef="let post">
+                        <mat-form-field floatLabel="never">
+                            <input type="number" style=" outline: none;" (change)="editUser(post)" matInput
+                                placeholder="Region Level" [value]="post.region_Level" [(ngModel)]="post.region_Level"
+                                required>
+                        </mat-form-field>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="parent_Level" fxFlex="40px">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Parent Level</mat-header-cell>
+                    <mat-cell *matCellDef="let post">
+                        <mat-form-field floatLabel="never">
+                            <input type="number" style=" outline: none;" (change)="editUser(post)" matInput
+                                placeholder="Parent Level" [value]="post.parent_Level" [(ngModel)]="post.parent_Level" class="numberAlign">
+                        </mat-form-field>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="creation_Date">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Creation Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.creation_Date | date :'dd-MM-yyyy, h:mm a'}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="created_By">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Created By
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.created_By}} </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="modified_On">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Modified On
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.modified_On | date :'dd-MM-yyyy, h:mm a'}}
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="modified_By">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.modified_By}} </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef> Action</mat-header-cell>
+                    <mat-cell *matCellDef="let post">
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item  (click)="editUser(post)">
+                                <mat-icon>edit</mat-icon> Edit
+                            </button>
+                            <button mat-menu-item (click)="deleteRegion(post)">
+                                <mat-icon>delete</mat-icon> Delete
+                            </button>
+                            <button mat-menu-item (click)="saveRegion(post)">
+                                <mat-icon>file_copy</mat-icon> Duplicate
+                            </button>
+                        </mat-menu>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+                </ng-container>
+                <!-- <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></mat-header-row> -->
+
+                <ng-container *matHeaderRowDef="displayedColumns">
+                    <mat-header-row  ></mat-header-row>
+                    <div class="mat-header-row header-group-row">
+                        <div class="mat-header-cell" role="columnheader">
+                            <mat-form-field class="filter" floatLabel="never">
+                                <mat-label>Search</mat-label>
+                                <input matInput [formControl]="idFilter">
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                </ng-container>
+
+                <!-- <mat-header-row *matHeaderRowDef="displayedColumns;sticky:true"></mat-header-row> -->
+                <mat-row *matRowDef="let row; columns: displayedColumns; ">
+                </mat-row>
+                <mat-footer-row *matFooterRowDef="displayedColumns;sticky: true"></mat-footer-row>
+            </mat-table>
+
+            <!-- To paginate between pages with search -->
+            <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]">
+            </mat-paginator>
+        </div>
+    </div>
+</mat-card>
